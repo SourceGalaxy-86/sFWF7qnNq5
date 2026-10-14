@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Free to Watch · lively & animated</title>
+  <style>
+    :root {
+      --bg: #0a2230;
+      --bg2: #103747;
+      --panel: #143f50;
+      --line: #2a6074;
+      --text: #f4efe6;
+      --mute: #a8c6cf;
+      --gold: #f6bd3b;
+      --coral: #ff7a59;
+      --ink: #0d2430;
+      --glow: #f6bd3b88;
+      --accent: #5eead4;
+      --accent2: #a78bfa;
+      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+      /* ─── NEON CURSORS ─── */
+      --cursor-arrow: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'><defs><filter id='cg1' x='-50%25' y='-50%25' width='200%25' height='200%25'><feGaussianBlur stdDeviation='2' result='b'/><feMerge><feMergeNode in='b'/><feMergeNode in='b'/><feMergeNode in='SourceGraphic'/></feMerge></filter></defs><path d='M6 4 L6 30 L13 23 L18 34 L22 32 L17 21 L26 21 Z' fill='%230a2230' stroke='%235eead4' stroke-width='1.6' stroke-linejoin='round' filter='url(%23cg1)'/></svg>") 6 4, auto;
+      --cursor-hand: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'><defs><filter id='cg2' x='-50%25' y='-50%25' width='200%25' height='200%25'><feGaussianBlur stdDeviation='2' result='b'/><feMerge><feMergeNode in='b'/><feMergeNode in='b'/><feMergeNode in='SourceGraphic'/></feMerge></filter></defs><path d='M14 4 C14 2.5 16 2.5 16 4 L16 18 L18 18 L18 12 C18 10.5 20 10.5 20 12 L20 18 L22 18 L22 13 C22 11.5 24 11.5 24 13 L24 18 L26 18 L26 15 C26 13.5 28 13.5 28 15 L28 24 C28 32 24 36 18 36 L14 36 C10 36 8 32 8 28 L8 22 C8 20.5 10 20.5 10 22 L10 24 L12 24 L12 8 C12 6.5 14 6.5 14 8 Z' fill='%230a2230' stroke='%235eead4' stroke-width='1.6' stroke-linejoin='round' filter='url(%23cg2)'/></svg>") 14 4, pointer;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* ─── NEON CURSOR APPLICATION ─── */
+    html, body {
+      cursor: var(--cursor-arrow);
+    }
+
+    a, button, [role="button"], input[type="submit"],
+    .chip, .pick, .ghost, .go, .stat, .tag,
+    summary, label[for] {
+      cursor: var(--cursor-hand);
+    }
+
+    input[type=search], input[type=text], input[type=email],
+    input[type=password], textarea {
+      cursor: text;
+    }
+
+    @media (hover: none) {
+      html, body, a, button, .chip, .pick, .ghost, .go {
+        cursor: auto;
+      }
+    }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      font: 16px/1.55 "Segoe UI", system-ui, sans-serif;
+      background:
+        radial-gradient(900px 500px at 85% -10%, #1d6a7a55, transparent 70%),
+        radial-gradient(700px 400px at -10% 10%, #ff7a5922, transparent 70%),
+        radial-gradient(600px 600px at 20% 80%, #2a607444, transparent 80%),
+        radial-gradient(500px 500px at 70% 50%, #5eead411, transparent 70%),
+        var(--bg);
+      background-attachment: fixed;
+      animation: bgPulse 16s infinite alternate ease-in-out, bgShift 24s infinite alternate;
+      overflow-x: hidden;
+    }
+
+    @keyframes bgPulse {
+      0% { background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 100% 100%; }
+      100% { background-size: 115% 115%, 125% 125%, 108% 108%, 120% 120%, 100% 100%; }
+    }
+
+    @keyframes bgShift {
+      0% { background-position: 0% 0%, 100% 0%, 0% 100%, 50% 50%, 0 0; }
+      100% { background-position: 10% 10%, 90% 10%, 10% 90%, 60% 40%, 0 0; }
+    }
+
+    /* ─── Floating particles ─── */
+    .particles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--gold);
+      opacity: 0;
+      animation: floatUp linear infinite;
+      box-shadow: 0 0 8px var(--gold);
+    }
+
+    @keyframes floatUp {
+      0% {
+        opacity: 0;
+        transform: translateY(100vh) scale(0.5);
+      }
+      10% { opacity: 0.8; }
+      90% { opacity: 0.6; }
+      100% {
+        opacity: 0;
+        transform: translateY(-10vh) scale(1.2);
+      }
+    }
+
+    /* ─── Aurora overlay ─── */
+    .aurora {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(600px 200px at 20% 30%, #5eead422, transparent 70%),
+        radial-gradient(500px 180px at 80% 60%, #a78bfa22, transparent 70%);
+      animation: auroraMove 18s infinite alternate ease-in-out;
+      mix-blend-mode: screen;
+      opacity: 0.6;
+    }
+
+    @keyframes auroraMove {
+      0% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(40px, -20px) scale(1.1); }
+      100% { transform: translate(-30px, 20px) scale(1.05); }
+    }
+
+    .wrap {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 20px 72px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      padding: 64px 0 30px;
+      display: grid;
+      gap: 18px;
+      position: relative;
+    }
+
+    h1 {
+      font: 700 clamp(2.6rem, 8vw, 5rem)/0.98 "Palatino Linotype", Palatino, Georgia, serif;
+      margin: 0;
+      letter-spacing: -0.02em;
+      max-width: 14ch;
+      background: linear-gradient(135deg, #f4efe6 0%, #f6bd3b 50%, #ff7a59 100%);
+      background-size: 200% 200%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: rise 0.8s var(--ease-out-expo) both,
+                 glowPulse 3s infinite alternate,
+                 textShimmer 5s infinite alternate;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(28px) scale(0.96); }
+      to { opacity: 1; transform: none; }
+    }
+
+    @keyframes glowPulse {
+      0% { filter: drop-shadow(0 0 0px var(--glow)); }
+      100% { filter: drop-shadow(0 0 18px var(--glow)) drop-shadow(0 0 40px #f6bd3b44); }
+    }
+
+    @keyframes textShimmer {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
+
+    .lede {
+      color: var(--mute);
+      font-size: 1.12rem;
+      max-width: 52ch;
+      margin: 0;
+      animation: rise 0.8s 0.15s var(--ease-out-expo) both;
+    }
+
+    .stats {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      animation: rise 0.8s 0.25s var(--ease-out-expo) both;
+    }
+
+    .stat {
+      background: #ffffff12;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 0.92rem;
+      transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, #ffffff22, transparent);
+      transform: translateX(-100%);
+      transition: transform 0.6s;
+    }
+
+    .stat:hover::before {
+      transform: translateX(100%);
+    }
+
+    .stat:hover {
+      border-color: var(--gold);
+      box-shadow: 0 0 20px #f6bd3b44, 0 0 40px #f6bd3b22;
+      transform: translateY(-3px) scale(1.03);
+    }
+
+    .stat b {
+      color: var(--gold);
+      transition: text-shadow 0.3s;
+    }
+
+    .stat:hover b {
+      text-shadow: 0 0 12px var(--gold), 0 0 24px var(--gold);
+    }
+
+    /* ─── STICKY BAR ─── */
+    .bar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      margin: 0 -20px;
+      padding: 14px 20px;
+      background: #0a2230dd;
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      gap: 12px;
+      transition: box-shadow 0.4s, background 0.4s, border-color 0.4s;
+      animation: rise 0.8s 0.3s var(--ease-out-expo) both;
+    }
+
+    .bar:hover {
+      background: #0a2230f0;
+      box-shadow: 0 8px 36px #00000088, 0 0 60px #f6bd3b11;
+      border-bottom-color: #f6bd3b44;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-bottom: 4px;
+    }
+
+    .chip {
+      flex: none;
+      font: inherit;
+      background: var(--chip-bg, #ffffff0d);
+      color: var(--text);
+      border: 1px solid var(--chip-border, var(--line));
+      border-radius: 999px;
+      padding: 8px 18px;
+      transition: background 0.25s, transform 0.25s, border-color 0.25s, box-shadow 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .chip::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, #f6bd3b44, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.35s;
+      pointer-events: none;
+    }
+
+    .chip:hover {
+      background: var(--chip-hover, #ffffff22);
+      transform: translateY(-3px) scale(1.04);
+      border-color: var(--chip-border, #ffffff44);
+      box-shadow: 0 6px 20px #00000044;
+    }
+
+    /* Each category has its own soft tint; Movies & TV Shows uses a warm cinema shade. */
+    .chip[data-category="Movies & TV Shows"] {
+      --chip-bg: #9a4b321f;
+      --chip-border: #ff9b7180;
+      --chip-hover: #c65c3a45;
+    }
+
+    .chip[data-category="Movies & TV Shows"][aria-pressed="true"] {
+      background: #e87850;
+      border-color: #ff9b71;
+      color: #102b36;
+      box-shadow: 0 3px 14px #e8785040;
+    }
+
+    .chip:hover::after {
+      opacity: 1;
+    }
+
+    .chip[aria-pressed="true"] {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: var(--ink);
+      font-weight: 700;
+      box-shadow: 0 0 20px #f6bd3b88, 0 0 40px #f6bd3b33, 0 0 60px #f6bd3b11;
+      animation: chipPop 0.4s var(--ease-out-expo);
+    }
+
+    @keyframes chipPop {
+      0% { transform: scale(0.85); }
+      50% { transform: scale(1.08); }
+      100% { transform: scale(1); }
+    }
+
+    /* ─── TOOLS ─── */
+    .tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    input[type=search] {
+      flex: 1;
+      min-width: 220px;
+      background: #ffffff12;
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font: inherit;
+      transition: border-color 0.3s, box-shadow 0.3s, background 0.3s, transform 0.2s;
+    }
+
+    input[type=search]:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 4px #f6bd3b33, 0 0 30px #f6bd3b44, 0 0 60px #f6bd3b11;
+      background: #ffffff1a;
+      outline: none;
+      transform: scale(1.01);
+    }
+
+    input[type=search]::placeholder {
+      color: var(--mute);
+      transition: color 0.3s, transform 0.3s;
+    }
+
+    input[type=search]:focus::placeholder {
+      color: #c8dce6;
+      transform: translateX(4px);
+    }
+
+    .pick {
+      font: inherit;
+      background: linear-gradient(135deg, var(--coral), #ff5a3a);
+      color: #fff;
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-weight: 700;
+      transition: filter 0.25s, transform 0.25s, box-shadow 0.3s;
+      box-shadow: 0 4px 20px #ff7a5944;
+      position: relative;
+      overflow: hidden;
+      background-size: 200% 200%;
+      animation: btnGradient 4s infinite alternate;
+    }
+
+    @keyframes btnGradient {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
+
+    .pick::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, #ffffff55, transparent);
+      transition: left 0.6s;
+      pointer-events: none;
+    }
+
+    .pick:hover {
+      filter: brightness(1.15);
+      transform: translateY(-3px) scale(1.04);
+      box-shadow: 0 10px 36px #ff7a5977, 0 0 60px #ff7a5944;
+    }
+
+    .pick:hover::after {
+      left: 120%;
+    }
+
+    .pick:active {
+      transform: translateY(0) scale(0.97);
+    }
+
+    .ghost {
+      font: inherit;
+      background: transparent;
+      color: var(--mute);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 18px;
+      transition: color 0.3s, border-color 0.3s, background 0.3s, transform 0.25s, box-shadow 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ghost:hover {
+      color: var(--text);
+      border-color: var(--text);
+      background: #ffffff0d;
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 6px 20px #00000044;
+    }
+
+    .ghost:active {
+      transform: scale(0.97);
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--gold);
+      outline-offset: 2px;
+    }
+
+    #count {
+      color: var(--mute);
+      margin: 22px 0 14px;
+      font-size: 0.95rem;
+      animation: fadeIn 0.6s var(--ease-out-expo);
+      transition: color 0.3s;
+    }
+
+    #count:hover {
+      color: var(--text);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    /* ─── GRID / CARDS ─── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: linear-gradient(145deg,
+        hsl(var(--source-hue, 185) 34% 17% / 0.78),
+        var(--panel) 62%,
+        hsl(calc(var(--source-hue, 185) + 24) 30% 11% / 0.88));
+      border: 1px solid hsl(var(--source-hue, 185) 45% 42% / 0.32);
+      border-radius: 18px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: transform 0.4s var(--ease-out-expo), border-color 0.35s, box-shadow 0.45s;
+      animation: cardEnter 0.6s var(--ease-out-expo) both;
+      will-change: transform;
+      position: relative;
+      overflow: hidden;
+      background-size: 200% 200%;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 25% 15%, hsl(var(--source-hue, 185) 80% 60% / 0.10), transparent 62%),
+                  radial-gradient(circle at 85% 85%, hsl(calc(var(--source-hue, 185) + 35) 75% 55% / 0.07), transparent 60%);
+      opacity: 0;
+      transition: opacity 0.45s;
+      pointer-events: none;
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: conic-gradient(from 0deg, transparent, hsl(var(--source-hue, 185) 80% 60% / 0.16), transparent, hsl(calc(var(--source-hue, 185) + 35) 75% 55% / 0.12), transparent);
+      animation: cardRotate 6s linear infinite;
+      opacity: 0;
+      transition: opacity 0.5s;
+      pointer-events: none;
+    }
+
+    .card:hover::after {
+      opacity: 0.35;
+    }
+
+    @keyframes cardRotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes cardEnter {
+      from { opacity: 0; transform: translateY(28px) scale(0.94); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .card:hover {
+      transform: translateY(-8px) scale(1.02);
+      border-color: hsl(var(--source-hue, 185) 70% 62% / 0.72);
+      box-shadow:
+        0 20px 60px #00000077,
+        0 0 0 1px hsl(var(--source-hue, 185) 70% 62% / 0.25),
+        0 0 28px hsl(var(--source-hue, 185) 70% 62% / 0.13);
+    }
+
+    .card.hit {
+      box-shadow:
+        0 0 0 4px var(--gold),
+        0 20px 60px #0008,
+        0 0 60px #f6bd3b77,
+        0 0 100px #f6bd3b33;
+      animation: hitPulse 1.4s var(--ease-out-expo);
+    }
+
+    @keyframes hitPulse {
+      0% { box-shadow: 0 0 0 0px var(--gold), 0 0 0px #f6bd3b00; }
+      40% { box-shadow: 0 0 0 12px var(--gold), 0 0 80px #f6bd3b99; }
+      100% { box-shadow: 0 0 0 4px var(--gold), 0 20px 60px #0008, 0 0 60px #f6bd3b77; }
+    }
+
+    .head {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .mono {
+      flex: none;
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      font: 700 1.6rem Georgia, serif;
+      color: #fff;
+      text-shadow: 0 1px 2px #0006;
+      transition: transform 0.4s var(--ease-out-expo), box-shadow 0.4s;
+      position: relative;
+    }
+
+    .mono::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 18px;
+      background: inherit;
+      filter: blur(12px);
+      opacity: 0;
+      transition: opacity 0.4s;
+      z-index: -1;
+    }
+
+    .card:hover .mono {
+      transform: scale(1.1) rotate(-6deg);
+      box-shadow: 0 8px 28px #00000066;
+    }
+
+    .card:hover .mono::after {
+      opacity: 0.6;
+    }
+
+    .card h2 {
+      font: 700 1.3rem/1.2 "Palatino Linotype", Palatino, Georgia, serif;
+      margin: 0;
+      transition: color 0.3s, transform 0.35s var(--ease-out-expo);
+    }
+
+    .card:hover h2 {
+      color: #f6e9d0;
+      transform: translateX(4px);
+      text-shadow: 0 0 20px #f6bd3b44;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--mute);
+      flex: 1;
+      transition: color 0.3s;
+    }
+
+    .card:hover p {
+      color: #d8e8ee;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag {
+      font-size: 0.8rem;
+      background: #ffffff14;
+      border-radius: 999px;
+      padding: 2px 10px;
+      transition: background 0.3s, color 0.3s, transform 0.25s, box-shadow 0.3s;
+    }
+
+    .card:hover .tag {
+      background: #f6bd3b22;
+      color: #f6e9d0;
+    }
+
+    .tag:hover {
+      background: #f6bd3b55;
+      transform: scale(1.1);
+      box-shadow: 0 0 14px #f6bd3b55;
+    }
+
+    .go {
+      display: block;
+      text-align: center;
+      background: linear-gradient(135deg, var(--gold), #f5a623);
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 700;
+      border-radius: 12px;
+      padding: 10px 16px;
+      transition: background 0.3s, transform 0.3s, box-shadow 0.35s, filter 0.3s;
+      position: relative;
+      overflow: hidden;
+      background-size: 200% 200%;
+      animation: btnGradient 5s infinite alternate;
+    }
+
+    .go::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, #ffffff77, transparent);
+      transition: left 0.6s;
+      pointer-events: none;
+    }
+
+    .go:hover {
+      background: linear-gradient(135deg, #ffe08a, #f6bd3b);
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 10px 32px #f6bd3b77, 0 0 60px #f6bd3b44;
+      filter: brightness(1.05);
+    }
+
+    .go:hover::after {
+      left: 120%;
+    }
+
+    .go:active {
+      transform: translateY(0) scale(0.97);
+    }
+
+    .empty {
+      padding: 36px;
+      border: 1px dashed var(--line);
+      border-radius: 18px;
+      color: var(--mute);
+      text-align: center;
+      animation: fadeIn 0.6s var(--ease-out-expo);
+      transition: border-color 0.3s, color 0.3s;
+    }
+
+    .empty:hover {
+      border-color: var(--gold);
+      color: var(--text);
+    }
+
+    footer {
+      margin-top: 44px;
+      color: var(--mute);
+      font-size: 0.88rem;
+      max-width: 70ch;
+      transition: color 0.3s, text-shadow 0.3s;
+    }
+
+    footer:hover {
+      color: #d8e8ee;
+      text-shadow: 0 0 20px #f6bd3b22;
+    }
+
+    /* ─── SCROLL REVEAL for cards ─── */
+    .card.reveal {
+      opacity: 0;
+      transform: translateY(30px) scale(0.95);
+    }
+
+    .card.reveal.visible {
+      opacity: 1;
+      transform: none;
+      transition: opacity 0.6s var(--ease-out-expo), transform 0.6s var(--ease-out-expo);
+    }
+
+    /* ─── ACCESSIBILITY ─── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      body { animation: none; }
+      h1 { animation: none; -webkit-text-fill-color: var(--text); background: none; }
+      .particles, .aurora { display: none; }
+      .card::after { animation: none; }
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 600px) {
+      .hero { padding: 40px 0 20px; }
+      h1 { font-size: clamp(2rem, 10vw, 3rem); }
+      .bar { padding: 12px 16px; }
+      .chip { padding: 6px 14px; font-size: 0.9rem; }
+      .pick, .ghost { padding: 10px 16px; font-size: 0.9rem; }
+      .card { padding: 16px; }
+      .mono { width: 44px; height: 44px; font-size: 1.3rem; }
+    }
+
+
+    /* ─── EXTRA INTERACTION LAYER ─── */
+    .scroll-progress {
+      position: fixed; inset: 0 auto auto 0; height: 3px; width: 0%; z-index: 100;
+      background: linear-gradient(90deg, var(--accent), var(--gold), var(--coral), var(--accent2));
+      box-shadow: 0 0 14px #5eead499; transition: width .08s linear;
+    }
+    .cursor-glow {
+      position: fixed; left: 0; top: 0; width: 280px; height: 280px; border-radius: 50%;
+      pointer-events: none; z-index: 0; opacity: .22; transform: translate(-50%, -50%);
+      background: radial-gradient(circle, #5eead433 0%, #a78bfa18 35%, transparent 70%);
+      mix-blend-mode: screen; will-change: left, top;
+    }
+    .hero::after {
+      content: '✦'; position: absolute; right: 5%; top: 28px; color: var(--gold);
+      font-size: clamp(2rem, 5vw, 4rem); opacity: .65;
+      text-shadow: 0 0 24px #f6bd3b99; animation: starFloat 5s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes starFloat { 0%,100% { transform: translateY(0) rotate(0) scale(1); } 50% { transform: translateY(-14px) rotate(18deg) scale(1.12); } }
+    .card { transform-style: preserve-3d; }
+    .card .head, .card p, .card .tags, .card .go { position: relative; z-index: 1; }
+    .card .mono { box-shadow: 0 8px 22px #0003; }
+    .go:focus-visible, .chip:focus-visible, button:focus-visible { outline-offset: 4px; }
+    .ripple {
+      position: absolute; border-radius: 50%; pointer-events: none; width: 12px; height: 12px;
+      background: #ffffff88; transform: translate(-50%,-50%) scale(0); animation: rippleOut .65s ease-out forwards;
+    }
+    @keyframes rippleOut { to { transform: translate(-50%,-50%) scale(18); opacity: 0; } }
+    @media (hover: none), (prefers-reduced-motion: reduce) { .cursor-glow { display:none; } .hero::after { animation:none; } }
+
+
+    /* ─── SOFTER GLOW TUNING ─── */
+    @keyframes glowPulse {
+      0% { filter: drop-shadow(0 0 0 rgba(246, 189, 59, 0)); }
+      100% { filter: drop-shadow(0 0 7px #f6bd3b33) drop-shadow(0 0 16px #f6bd3b18); }
+    }
+    .cursor-glow {
+      width: 220px;
+      height: 220px;
+      opacity: .09;
+      background: radial-gradient(circle, #5eead41c 0%, #a78bfa0c 35%, transparent 70%);
+    }
+    .scroll-progress { box-shadow: 0 0 5px #5eead455; }
+    .hero::after { text-shadow: 0 0 10px #f6bd3b55; }
+    .stat:hover { box-shadow: 0 0 10px #f6bd3b22, 0 0 20px #f6bd3b11; }
+    .stat:hover b { text-shadow: 0 0 6px #f6bd3b88; }
+    .search:focus-within { box-shadow: 0 0 0 3px #f6bd3b1c, 0 0 14px #f6bd3b22; }
+    .chip.active { box-shadow: 0 0 10px #f6bd3b33; }
+    .go:hover { box-shadow: 0 6px 18px #ff7a5944, 0 0 22px #ff7a5922; }
+
+  </style>
+</head>
+<body>
+  <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
+  <div class="cursor-glow" id="cursor-glow" aria-hidden="true"></div>
+  <div class="particles" id="particles"></div>
+  <div class="aurora"></div>
+
+  <div class="wrap">
+    <header class="hero">
+      <h1>Find something free to enjoy</h1>
+      <p class="lede">Legal places to watch, read, play and listen at no cost. Pick a type, search by name, or let the page choose for you.</p>
+      <div class="stats">
+        <span class="stat"><b id="n-all">0</b> sources</span>
+        <span class="stat"><b id="n-cat">0</b> categories</span>
+        <span class="stat">All links open official sites</span>
+      </div>
+    </header>
+
+    <div class="bar">
+      <div class="tools">
+        <input type="search" id="q" placeholder="Search sources" aria-label="Search sources">
+        <button class="pick" id="rand">✨ Pick one for me</button>
+        <button class="ghost" id="reset">Clear filters</button>
+      </div>
+      <div class="chips" id="f-type" role="group" aria-label="Content type"></div>
+    </div>
+
+    <p id="count" aria-live="polite"></p>
+    <div class="grid" id="grid"></div>
+
+    <footer>Availability, catalogs and sign-up rules differ by country. If a site is not offered where you live, try another card.</footer>
+  </div>
+
+  <script>
+    // ─── Particle generator ───
+    (function createParticles() {
+      const container = document.getElementById('particles');
+      const count = 30;
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const size = Math.random() * 4 + 2;
+        const colors = ['#f6bd3b', '#ff7a59', '#5eead4', '#a78bfa', '#f4efe6'];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        p.style.width = size + 'px';
+        p.style.height = size + 'px';
+        p.style.background = color;
+        p.style.boxShadow = `0 0 ${size * 3}px ${color}`;
+        p.style.left = Math.random() * 100 + '%';
+        p.style.animationDuration = (Math.random() * 15 + 12) + 's';
+        p.style.animationDelay = (Math.random() * -20) + 's';
+        p.style.opacity = Math.random() * 0.5 + 0.2;
+        container.appendChild(p);
+      }
+    })();
+
+    // ─── Data ───
+    const S = [
+      /* Movies & Tv Shows */
+      {n:"Ramoflix",d:"Large ad-supported catalog of films and series, no account needed.",c:"Free with ads",t:["Movies & TV Shows"],u:"https://ramoflix.net/"},
+      {n:"Doraby",d:"Live channels plus an on-demand library of movies and series.",c:"Free with ads",t:["Movies & TV Shows"],u:"https://doraby.com/"},
+      {n:"Wmovies",d:"Free movies, series and live channels, available in a browser too.",c:"Free with ads",t:["Movies & TV Shows"],u:"https://wmovies.org/"},
+      {n:"Hydrahd",d:"Free ad-supported movies and shows, plus live channels.",c:"Free with ads",t:["Movies & TV Shows"],u:"https://hydrahd.ws/"},
+      {n:"Goojara",d:"A free section of ad-supported movies and shows.",c:"Free with ads",t:["Movies & TV Shows"],u:"https://ww1.goojara.to/"},
+      {n:"7movies",d:"Full-length films uploaded or licensed by studios, with ads.",c:"Free with ads",t:["Movies & TV Shows"],u:"https://7movies.in/"},
+      {n:"aether",d:"Public-domain and openly licensed feature films you can stream or download.",c:"Public domain",t:["Movies & TV Shows"],u:"https://aether.ist/"},
+      {n:"Fluxtv",d:"Silent films, old newsreels, cartoons and other archival video.",c:"Public domain",t:["Movies & TV Shows"],u:"https://fluxtv.cc/"},
+      {n:"Flixer",d:"A curated list of free classics, documentaries and indie films from around the web.",c:"Public domain",t:["Movies & TV Shows"],u:"https://flixer.su/"},
+      {n:"Streamvaults",d:"Arthouse, classics and documentaries, free with a participating library or university login.",c:"Library card",t:["Movies & TV Shows"],u:"https://streamvaults.ru/"},
+      {n:"Primeshows",d:"Movies, series, comics and music, borrowed with a library card.",c:"Library card",t:["Movies & TV Shows"],u:"https://primeshows.org/"},
+      {n:"67movies",d:"Documentaries, history and drama, much of it free to stream.",c:"Free with ads",t:["Movies & TV Shows"],u:"https://67movies.net/"},
+      {n:"Shuttletv",d:"Classic anime and retro animation, free with ads.",c:"Free with ads",t:["Anime","Movies & TV Shows"],u:"https://shuttletv.su/"},
+      {n:"Popcornmovies",d:"Silent films, old newsreels, cartoons and other archival video.",c:"Public domain",t:["Movies & TV Shows"],u:"https://popcornmovies.ac/"},
+      {n:"Rivestream",d:"Silent films, old newsreels, cartoons and other archival video.",c:"Public domain",t:["Movies & TV Shows"],u:"https://www.rivestream.app/"},
+      {n:"Stellar",d:"Silent films, old newsreels, cartoons and other archival video.",c:"Public domain",t:["Movies & TV Shows"],u:"https://stellar.gdn/"},
+      {n:"onionplay",d:"Silent films, old newsreels, cartoons and other archival video.",c:"Public domain",t:["Movies & TV Shows"],u:"https://onionplay.st/"},
+      {n:"Lookmovie2",d:"Silent films, old newsreels, cartoons and other archival video.",c:"Public domain",t:["Movies & TV Shows"],u:"https://www.lookmovie2.to/"},
+      {n:"Pressplayz",d:"Silent films, old newsreels, cartoons and other archival video.",c:"Public domain",t:["Movies & TV Shows"],u:"https://pressplayz.to/"},
+      {n:"Nepu",d:"Silent films, old newsreels, cartoons and other archival video.",c:"Public domain",t:["Movies & TV Shows"],u:"https://nepu.io/"},
+      {n:"Fmoviess",d:"Silent films, old newsreels, cartoons and other archival video.",c:"Public domain",t:["Movies & TV Shows"],u:"https://fmoviess.org/"},
+      {n:"Soap2dayhd",d:"Silent films, old newsreels, cartoons and other archival video.",c:"Public domain",t:["Movies & TV Shows"],u:"https://soap2dayhd.net/home/"},
+      {n:"azmovies",d:"Silent films, old newsreels, cartoons and other archival video.",c:"Public domain",t:["Movies & TV Shows"],u:"https://azmovies.to/"},
+      {n:"Mapple",d:"Silent films, old newsreels, cartoons and other archival video.",c:"Public domain",t:["Movies & TV Shows"],u:"https://mapple.club/"},
+      {n:"Streamex",d:"Silent films, old newsreels, cartoons and other archival video.",c:"Public domain",t:["Movies & TV Shows"],u:"https://streamex.sh/"},
+      {n:"opstream",d:"Silent films, old newsreels, cartoons and other archival video.",c:"Public domain",t:["Movies & TV Shows"],u:"https://opstream.fun/"},
+      {n:"Latestmovies",d:"Silent films, old newsreels, cartoons and other archival video.",c:"Public domain",t:["Movies & TV Shows"],u:"https://latestmovies.net/"},
+      {n:"Officialmoviebox",d:"Silent films, old newsreels, cartoons and other archival video.",c:"Public domain",t:["Movies & TV Shows"],u:"https://officialmoviebox.com/"},
+      {n:"Hdtoday24",d:"Silent films, old newsreels, cartoons and other archival video.",c:"Public domain",t:["Movies & TV Shows"],u:"https://hdtoday24.at/"},
+      {n:"Cinebytv",d:"Silent films, old newsreels, cartoons and other archival video.",c:"Public domain",t:["Movies & TV Shows"],u:"https://cinebytv.com/"},
+      {n:"Ridomovies",d:"Silent films, old newsreels, cartoons and other archival video.",c:"Public domain",t:["Movies & TV Shows"],u:"https://ridomovies.su/"},
+      {n:"123moviesfree",d:"Silent films, old newsreels, cartoons and other archival video.",c:"Public domain",t:["Movies & TV Shows"],u:"https://ww7.123moviesfree.net/home/"},
+      {n:"Willowmovies",d:"Silent films, old newsreels, cartoons and other archival video.",c:"Public domain",t:["Movies & TV Shows"],u:"https://willowmovies.com/"},
+      {n:"Vidplay",d:"Silent films, old newsreels, cartoons and other archival video.",c:"Public domain",t:["Movies & TV Shows"],u:"https://vidplay.top/"},
+      {n:"cinemaos",d:"Silent films, old newsreels, cartoons and other archival video.",c:"Public domain",t:["Movies & TV Shows"],u:"https://cinemaos.live/"},
+      {n:"Yesmovies",d:"Silent films, old newsreels, cartoons and other archival video.",c:"Public domain",t:["Movies & TV Shows"],u:"https://ww.yesmovies.ag/"},
+      {n:"Anixtv",d:"Silent films, old newsreels, cartoons and other archival video.",c:"Public domain",t:["Movies & TV Shows"],u:"https://anixtv.us.cc/"},
+      {n:"Primewire",d:"Silent films, old newsreels, cartoons and other archival video.",c:"Public domain",t:["Movies & TV Shows"],u:"https://www.primewire.mov/home"},
+      {n:"Moviepire",d:"Silent films, old newsreels, cartoons and other archival video.",c:"Public domain",t:["Movies & TV Shows"],u:"https://moviepire.ru/"},
+      {n:"Flicker-mini",d:"Silent films, old newsreels, cartoons and other archival video.",c:"Public domain",t:["Movies & TV Shows"],u:"https://flicker-mini.pages.dev/"},
+      {n:"M4uhd",d:"Silent films, old newsreels, cartoons and other archival video.",c:"Public domain",t:["Movies & TV Shows"],u:"https://ww1.m4uhd.page/"},
+
+      /* Anime */
+      {n:"Anime.Nexus",d:"All kind of Anime",c:"Free",t:["Anime"],u:"https://anime.nexus/"},
+      {n:"Anisuge",d:"All kind of Anime",c:"Free",t:["Anime"],u:"https://anisuge.tv/home"},
+      {n:"anizone",d:"All kind of Anime",c:"Free",t:["Anime"],u:"https://anizone.to/"},
+      {n:"Miruro",d:"All kind of Anime",c:"Free",t:["Anime"],u:"https://www.miruro.to/"},
+      {n:"Anitaku",d:"All kind of Anime",c:"Free",t:["Anime"],u:"https://anitaku.io/"},
+      {n:"Animepahe",d:"All kind of Anime",c:"Free",t:["Anime"],u:"https://animepahe.pw/"},
+      {n:"Anify",d:"All kind of Anime",c:"Free",t:["Anime"],u:"https://anify.to/"},
+      {n:"Yenime",d:"All kind of Anime",c:"Free",t:["Anime"],u:"https://yenime.net/"},
+      {n:"kickass-anime",d:"All kind of Anime",c:"Free",t:["Anime"],u:"https://kickass-anime.ro/"},
+      {n:"Animex.one",d:"All kind of Anime",c:"Free",t:["Anime"],u:"https://animex.one/home"},
+      {n:"Animegg",d:"All kind of Anime",c:"Free",t:["Anime"],u:"https://www.animegg.org/"},
+      {n:"Anime.uniquestream",d:"All kind of Anime",c:"Free",t:["Anime"],u:"https://anime.uniquestream.net/"},
+      {n:"kissanime",d:"All kind of Anime",c:"Free",t:["Anime"],u:"https://kissanime.com.ru/"},
+      {n:"Allmanga",d:"All kind of Anime",c:"Free",t:["Anime"],u:"https://allmanga.to/"},
+      {n:"Aniworld",d:"All kind of Anime",c:"Free",t:["Anime"],u:"https://aniworld.to/"},
+      {n:"Wcostream",d:"All kind of Anime",c:"Free",t:["Anime"],u:"https://www.wcostream.tv/"},
+      {n:"Justanime",d:"All kind of Anime",c:"Free",t:["Anime"],u:"https://justanime.to/"},
+      {n:"123animes",d:"All kind of Anime",c:"Free",t:["Anime"],u:"https://w1.123animes.ru/"},
+
+      /* Manga */
+      {n:"Comix",d:"Free first and latest chapters of major manga series.",c:"Free",t:["Manga"],u:"https://comix.to/"},
+      {n:"Mangafire",d:"Free first and latest chapters of major manga series.",c:"Free",t:["Manga"],u:"https://mangafire.to/home"},
+      {n:"Mangahaven",d:"Free first and latest chapters of major manga series.",c:"Free",t:["Manga"],u:"https://mangahaven.net/"},
+      {n:"Mangataro",d:"Free first and latest chapters of major manga series.",c:"Free",t:["Manga"],u:"https://mangataro.org/"},
+      {n:"Mangadex",d:"Free first and latest chapters of major manga series.",c:"Free",t:["Manga"],u:"https://mangadex.org/"},
+      {n:"Allmanga",d:"Free first and latest chapters of major manga series.",c:"Free",t:["Manga"],u:"https://allmanga.to/manga"},
+      {n:"Mangago",d:"Free first and latest chapters of major manga series.",c:"Free",t:["Manga"],u:"https://mangago.me/"},
+      {n:"Weebcentral",d:"Free first and latest chapters of major manga series.",c:"Free",t:["Manga"],u:"https://weebcentral.com/"},
+      {n:"Manganato",d:"Free first and latest chapters of major manga series.",c:"Free",t:["Manga"],u:"https://www.manganato.gg/"},
+      {n:"Kagane",d:"Free first and latest chapters of major manga series.",c:"Free",t:["Manga"],u:"https://kagane.org/"},
+
+      /* Live Sports / Live TV */
+      {n:"Hai8g",d:"Live and on-demand action sports, music and culture events.",c:"Free",t:["Live Sports","Live TV"],u:"https://hai8g.com/4/11158480"},
+      {n:"Livetv",d:"Live and on-demand action sports, music and culture events.",c:"Free",t:["Live Sports","Live TV"],u:"https://livetv.sx/enx/"},
+      {n:"Streamsports99",d:"Live and on-demand action sports, music and culture events.",c:"Free",t:["Live Sports","Live TV"],u:"https://streamsports99.su/"},
+      {n:"Streamed",d:"Live and on-demand action sports, music and culture events.",c:"Free",t:["Live Sports","Live TV"],u:"https://streamed.pk/"},
+      {n:"Fctv33",d:"Live and on-demand action sports, music and culture events.",c:"Free",t:["Live Sports","Live TV"],u:"https://www.fctv33.hair/"},
+      {n:"Methstreams",d:"Live and on-demand action sports, music and culture events.",c:"Free",t:["Live Sports","Live TV"],u:"https://methstreams.ms/"},
+      {n:"Streamfree",d:"Live and on-demand action sports, music and culture events.",c:"Free",t:["Live Sports","Live TV"],u:"https://streamfree.top/"},
+      {n:"Bintv",d:"Live and on-demand action sports, music and culture events.",c:"Free",t:["Live Sports","Live TV"],u:"https://www.bintv.cc/"},
+      {n:"Sportyhunter",d:"Live and on-demand action sports, music and culture events.",c:"Free",t:["Live Sports","Live TV"],u:"https://sportyhunter.xyz/"},
+      {n:"Roxiestreams",d:"Live and on-demand action sports, music and culture events.",c:"Free",t:["Live Sports","Live TV"],u:"https://roxiestreams.su/"},
+      {n:"Onhockey",d:"Live and on-demand action sports, music and culture events.",c:"Free",t:["Live Sports","Live TV"],u:"http://onhockey.tv/"},
+      {n:"Crackstreams",d:"Live and on-demand action sports, music and culture events.",c:"Free",t:["Live Sports","Live TV"],u:"https://crackstreams.io/"},
+      {n:"Score808hd",d:"Live and on-demand action sports, music and culture events.",c:"Free",t:["Live Sports","Live TV"],u:"https://a1.score808hd.tv/"},
+      {n:"Timstreams",d:"Live and on-demand action sports, music and culture events.",c:"Free",t:["Live Sports","Live TV"],u:"https://timstreams.st/"},
+      {n:"Strikeout",d:"Live and on-demand action sports, music and culture events.",c:"Free",t:["Live Sports","Live TV"],u:"https://strikeout.im/"},
+      {n:"Watchfooty",d:"Live and on-demand action sports, music and culture events.",c:"Free",t:["Live Sports","Live TV"],u:"https://www.watchfooty.st/en"},
+      {n:"Sportsurge",d:"Live and on-demand action sports, music and culture events.",c:"Free",t:["Live Sports","Live TV"],u:"https://v2.sportsurge.net/"},
+      {n:"Globetv",d:"Live and on-demand action Drama, music and culture events.",c:"Free",t:["Live TV"],u:"https://globetv.app/"},
+      {n:"24-7-channels",d:"Live and on-demand action Drama, music and culture events.",c:"Free",t:["Live TV"],u:"https://dlhd.st//24-7-channels.php"},
+      {n:"Ntv",d:"Live and on-demand action Drama, music and culture events.",c:"Free",t:["Live TV"],u:"https://ntv.cx/"},
+      {n:"Iptv-web",d:"Live and on-demand action Drama, music and culture events.",c:"Free",t:["Live TV"],u:"https://iptv-web.app/"},
+      {n:"Publiciptv",d:"Live and on-demand action Drama, music and culture events.",c:"Free",t:["Live TV"],u:"https://publiciptv.com/"},
+
+      /* Torrents */
+      {n:"1337x",d:"Torrents of Creative Commons and other freely media.",c:"Legal",t:["Torrents"],u:"https://1337x.to/"},
+      {n:"Rutracker",d:"Torrents of Creative Commons and other freely media.",c:"Legal",t:["Torrents"],u:"https://rutracker.org/forum/index.php"},
+      {n:"Limetorrents",d:"Torrents of Creative Commons and other freely media.",c:"Legal",t:["Torrents"],u:"https://www.limetorrents.fun/"},
+      {n:"Yts",d:"Torrents of Creative Commons and other freely media.",c:"Legal",t:["Torrents"],u:"https://yts.bz/"},
+      {n:"Eztvx",d:"Torrents of Creative Commons and other freely media.",c:"Legal",t:["Torrents"],u:"https://eztvx.to/home"},
+      {n:"Torrentgalaxy",d:"Torrents of Creative Commons and other freely media.",c:"Legal",t:["Torrents"],u:"https://torrentgalaxy.one/"},
+      {n:"Extratorrent",d:"Torrents of Creative Commons and other freely media.",c:"Legal",t:["Torrents"],u:"https://extratorrent.st/"},
+      {n:"Ext",d:"Torrents of Creative Commons and other freely media.",c:"Legal",t:["Torrents"],u:"https://ext.to/"},
+      {n:"Rargb",d:"Torrents of Creative Commons and other freely media.",c:"Legal",t:["Torrents"],u:"https://rargb.to/"},
+      {n:"Thepiratebay(Risky)",d:"Torrents of Creative Commons and other freely media.",c:"Legal",t:["Torrents"],u:"https://thepiratebay.org/index.html"},
+
+      /* Games */
+      {n:"Fitgirl-repacks",d:"Games that cost nothing to download and play.",c:"Free",t:["Games"],u:"https://fitgirl-repacks.site/"},
+      {n:"Dodi-repacks",d:"Games that cost nothing to download and play.",c:"Free",t:["Games"],u:"https://dodi-repacks.site/"},
+      {n:"Ankergames",d:"Games that cost nothing to download and play.",c:"Free",t:["Games"],u:"https://ankergames.net/"},
+      {n:"G4u",d:"Games that cost nothing to download and play.",c:"Free",t:["Games"],u:"https://g4u.to/"},
+      {n:"Steamrip",d:"Games that cost nothing to download and play.",c:"Free",t:["Games"],u:"https://steamrip.com/"},
+      {n:"Steamgg",d:"Games that cost nothing to download and play.",c:"Free",t:["Games"],u:"https://steamgg.net/"},
+      {n:"M4ckd0ge",d:"Games that cost nothing to download and play.",c:"Free",t:["Games"],u:"https://m4ckd0ge-repacks.site/"},
+      {n:"Gload",d:"Games that cost nothing to download and play.",c:"Free",t:["Games"],u:"https://gload.to/"},
+
+      /* Music */
+      {n:"Spotdownloader",d:"Music from independent artists, free to stream.",c:"Free",t:["Music"],u:"https://spotdownloader.com/"},
+      {n:"Spotifymate",d:"Music from independent artists, free to stream.",c:"Free",t:["Music"],u:"https://spotifymate.com/en"},
+      {n:"Spotmate",d:"Music from independent artists, free to stream.",c:"Free",t:["Music"],u:"https://spotmate.online/"},
+      {n:"Y2mate",d:"Music from independent artists, free to stream.",c:"Free",t:["Music"],u:"https://v1.y2mate.nu/"},
+      {n:"Azmp3",d:"Music from independent artists, free to stream.",c:"Free",t:["Music"],u:"https://azmp3.cc/"},
+      {n:"Ytmp3",d:"Music from independent artists, free to stream.",c:"Free",t:["Music"],u:"https://ytmp3.cc/"},
+      {n:"Racoon",d:"Music from independent artists, free to stream.",c:"Free",t:["Music"],u:"https://shailendramaurya.github.io/racoon/"},
+      {n:"Ytiz",d:"Music from independent artists, free to stream.",c:"Free",t:["Music"],u:"https://ytiz.xyz/"},
+      {n:"Lucida",d:"Music from independent artists, free to stream.",c:"Free",t:["Music"],u:"https://lucida.to/"},
+      {n:"Slsknet",d:"Music Software.",c:"Free",t:["Music"],u:"https://www.slsknet.org/"},
+      {n:"Spotube",d:"Music Software.",c:"Free",t:["Music"],u:"https://spotube.krtirtho.dev/"},
+      {n:"Downline",d:"Music Software.",c:"Free",t:["Music"],u:"https://stefnotch.github.io/downline/"},
+
+      /* Ebooks */
+      {n:"Z-lib",d:"Over multiple thousands public-domain ebooks.",c:"Public domain",t:["Books"],u:"https://z-lib.gd/"},
+      {n:"Annas-archive",d:"Over multiple thousands public-domain ebooks.",c:"Public domain",t:["Books"],u:"https://annas-archive.gl/"},
+      {n:"Libgen",d:"Over multiple thousands public-domain ebooks.",c:"Public domain",t:["Books"],u:"https://libgen.li/"},
+      {n:"Fulllengthaudiobooks",d:"Audio books.",c:"Public domain",t:["Books"],u:"https://fulllengthaudiobooks.com/"},
+      {n:"Audiobookbay",d:"Over multiple thousands public-domain ebooks.",c:"Public domain",t:["Books"],u:"https://audiobookbay.lu/"},
+      {n:"Nepu",d:"Over multiple thousands public-domain ebooks.",c:"Public domain",t:["Books"],u:"https://nepu.to/ebooks"},
+      {n:"Foxit",d:"eBook Readers.",c:"Public domain",t:["Books"],u:"https://www.foxit.com/pdf-reader/"},
+      {n:"Flowoss",d:"eBook Readers.",c:"Public domain",t:["Books"],u:"https://www.flowoss.com/"},
+
+      /* Comics */
+      {n:"globalcomix",d:"Public-domain golden-age comics you can read online.",c:"Public domain",t:["Comics"],u:"https://globalcomix.com/"},
+      {n:"xoxocomic",d:"Public-domain golden-age comics you can read online.",c:"Public domain",t:["Comics"],u:"https://xoxocomic.com/"},
+      {n:"comicbookplus",d:"Public-domain golden-age comics you can read online.",c:"Public domain",t:["Comics"],u:"https://comicbookplus.com/"},
+      {n:"batcave",d:"Public-domain golden-age comics you can read online.",c:"Public domain",t:["Comics"],u:"https://batcave.biz/"},
+      {n:"getcomics",d:"Public-domain golden-age comics you can read online.",c:"Public domain",t:["Comics"],u:"https://getcomics.org/"},
+
+      /* Asian Drama */
+      {n:"asiaflix",d:"Chinese and Asian dramas, variety and anime, with a free ad-supported tier.",c:"Free with ads",t:["Asian Drama"],u:"https://asiaflix.net/home"},
+      {n:"kisskh",d:"Chinese and Asian dramas, variety and anime, with a free ad-supported tier.",c:"Free with ads",t:["Asian Drama"],u:"https://kisskh.id/"},
+      {n:"goplay",d:"Chinese and Asian dramas, variety and anime, with a free ad-supported tier.",c:"Free with ads",t:["Asian Drama"],u:"https://goplay.su/"},
+      {n:"kissasian",d:"Chinese and Asian dramas, variety and anime, with a free ad-supported tier.",c:"Free with ads",t:["Asian Drama"],u:"https://ww14.kissasian.com.lv/"},
+      {n:"dramacool",d:"Chinese and Asian dramas, variety and anime, with a free ad-supported tier.",c:"Free with ads",t:["Asian Drama"],u:"https://dramacool.com.tr/"},
+      {n:"asianctv",d:"Chinese and Asian dramas, variety and anime, with a free ad-supported tier.",c:"Free with ads",t:["Asian Drama"],u:"https://asianctv.cc/"},
+      {n:"myasiantv",d:"Chinese and Asian dramas, variety and anime, with a free ad-supported tier.",c:"Free with ads",t:["Asian Drama"],u:"https://myasiantv.com.bz/"},
+      {n:"kisskh",d:"Chinese and Asian dramas, variety and anime, with a free ad-supported tier.",c:"Free with ads",t:["Asian Drama"],u:"https://kisskh.club/"},
+
+      /* Ad Blockers */
+      {n:"Ublockorigin",d:"A free, open-source ad and tracker blocker for browsers.",c:"Free",t:["AdBlockers"],u:"https://ublockorigin.com/"},
+      {n:"Adblockplus",d:"A free, open-source ad and tracker blocker for browsers.",c:"Free",t:["AdBlockers"],u:"https://adblockplus.org/"},
+      {n:"Adguard",d:"A free, open-source ad and tracker blocker for browsers.",c:"Free",t:["AdBlockers"],u:"https://adguard.com/"},
+      {n:"Getadblock",d:"A free, open-source ad and tracker blocker for browsers.",c:"Free",t:["AdBlockers"],u:"https://getadblock.com/en/"},
+      {n:"Poperblocker",d:"A free, open-source ad and tracker blocker for browsers.",c:"Free",t:["AdBlockers"],u:"https://poperblocker.com/"},
+
+      /* VPN */
+      {n:"Proton",d:"A VPN with a free data allowance.",c:"Free",t:["VPN"],u:"https://go.getproton.me/SH2ba"},
+      {n:"SurfShark",d:"A VPN with a free data allowance.",c:"Free",t:["VPN"],u:"https://www.dpbolvw.net/click-101290998-15438560"},
+      {n:"ExpressVPN",d:"A VPN with a free data allowance.",c:"Free",t:["VPN"],u:"https://www.jdoqocy.com/click-101290998-15230984"},
+      {n:"CyberGhost",d:"A VPN with a free data allowance.",c:"Free",t:["VPN"],u:"https://www.dpbolvw.net/click-101290998-15024066"},
+      {n:"Private Inter Access",d:"A VPN with a free data allowance.",c:"Free",t:["VPN"],u:"https://www.tkqlhce.com/click-101290998-14096959"},
+      {n:"Veepn",d:"A VPN with a free data allowance.",c:"Free",t:["VPN"],u:"https://www.tkqlhce.com/click-101290998-15736524"},
+    ];
+
+    const types = ["Movies & TV Shows","Anime","Manga","Live Sports","Live TV","Torrents","Games","Music","Books","Comics","Asian Drama","VPN","AdBlockers"];
+    let type = "All";
+    const $ = id => document.getElementById(id);
+
+    function chips(el, list, get, set) {
+      el.innerHTML = "";
+      ["All", ...list].forEach(v => {
+        const b = document.createElement("button");
+        b.className = "chip";
+        b.textContent = v;
+        b.dataset.category = v;
+        // A distinct muted tint for every category, while keeping the overall palette cohesive.
+        const categoryShades = {
+          "All": ["#ffffff0d", "#2a6074"],
+          "Anime": ["#a78bfa20", "#a78bfa70"],
+          "Manga": ["#f472b620", "#f472b670"],
+          "Live Sports": ["#4ade8020", "#4ade8070"],
+          "Live TV": ["#38bdf820", "#38bdf870"],
+          "Torrents": ["#f8717120", "#f8717170"],
+          "Games": ["#818cf820", "#818cf870"],
+          "Music": ["#facc1520", "#facc1570"],
+          "Books": ["#d6a87520", "#d6a87570"],
+          "Comics": ["#fb923c20", "#fb923c70"],
+          "Asian Drama": ["#f9a8d420", "#f9a8d470"],
+          "VPN": ["#2dd4bf20", "#2dd4bf70"],
+          "AdBlockers": ["#94a3b820", "#94a3b870"]
+        };
+        const shade = categoryShades[v];
+        if (shade) {
+          b.style.setProperty("--chip-bg", shade[0]);
+          b.style.setProperty("--chip-border", shade[1]);
+          b.style.setProperty("--chip-hover", shade[0].replace("20", "38"));
+        }
+        b.setAttribute("aria-pressed", get() === v);
+        b.onclick = () => { set(v); render(); };
+        el.appendChild(b);
+      });
+    }
+
+    function match(x) {
+      const q = $("q").value.trim().toLowerCase();
+      return (type === "All" || x.t.includes(type)) &&
+        (!q || (x.n + " " + x.d + " " + x.t.join(" ")).toLowerCase().includes(q));
+    }
+
+    function setupScrollReveal() {
+      const cards = document.querySelectorAll('.card.reveal');
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+        cards.forEach(c => observer.observe(c));
+      } else {
+        cards.forEach(c => c.classList.add('visible'));
+      }
+    }
+
+    function render(hit) {
+      chips($("f-type"), types, () => type, v => type = v);
+      const list = S.filter(match);
+      $("count").textContent = list.length + (list.length === 1 ? " source" : " sources");
+      const g = $("grid");
+      g.innerHTML = "";
+      if (!list.length) {
+        g.innerHTML = '<div class="empty">Nothing matches. Clear the filters or try a different word.</div>';
+        return;
+      }
+      list.forEach((x, idx) => {
+        const a = document.createElement("article");
+        a.className = "card reveal" + (hit === x.n ? " hit" : "");
+        a.style.setProperty('--i', idx % 20);
+        // Group source cards by category: every source in a category shares the same shade.
+        // Movies takes priority for sources tagged in more than one category.
+        const categoryHues = {
+          "Movies & TV Shows": 18,
+          "Anime": 270,
+          "Manga": 330,
+          "Live Sports": 125,
+          "Live TV": 205,
+          "Torrents": 42,
+          "Games": 245,
+          "Music": 52,
+          "Books": 185,
+          "Comics": 300,
+          "Asian Drama": 345,
+          "VPN": 175,
+          "AdBlockers": 160
+        };
+        const sourceCategory = x.t.includes("Movies & TV Shows")
+          ? "Movies & TV Shows"
+          : (x.t[0] || "Movies & TV Shows");
+        a.style.setProperty('--source-hue', categoryHues[sourceCategory] ?? 185);
+        a.innerHTML = `
+          <div class="head"><div class="mono"></div><h2></h2></div>
+          <p></p>
+          <div class="tags"></div>
+          <a class="go" target="_blank" rel="noopener noreferrer">Visit site</a>
+        `;
+        const m = a.querySelector(".mono");
+        m.textContent = x.n[0].toUpperCase();
+        let h = 0;
+        for (const ch of x.n) h = (h * 31 + ch.charCodeAt(0)) % 360;
+        m.style.background = `linear-gradient(135deg, hsl(${h}, 65%, 50%), hsl(${(h+40)%360}, 70%, 38%))`;
+        a.querySelector("h2").textContent = x.n;
+        a.querySelector("p").textContent = x.d;
+        x.t.forEach(t => {
+          const s = document.createElement("span");
+          s.className = "tag";
+          s.textContent = t;
+          a.querySelector(".tags").appendChild(s);
+        });
+        a.querySelector(".go").href = x.u;
+        g.appendChild(a);
+
+        a.style.transitionDelay = `${(idx % 8) * 0.04}s`;
+
+        if (hit === x.n) {
+          a.scrollIntoView({
+            behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+            block: "center"
+          });
+        }
+      });
+
+      requestAnimationFrame(() => setupScrollReveal());
+    }
+
+    $("q").oninput = () => render();
+    $("reset").onclick = () => { type = "All"; $("q").value = ""; render(); };
+    $("rand").onclick = () => {
+      const list = S.filter(match);
+      if (!list.length) return;
+      render(list[Math.floor(Math.random() * list.length)].n);
+    };
+
+    $("n-all").textContent = S.length;
+    $("n-cat").textContent = types.length;
+
+    window.addEventListener('load', () => {
+      render();
+      document.querySelectorAll('.card').forEach((c, i) => {
+        c.style.animationDelay = `${i * 0.02}s`;
+      });
+    });
+
+
+    // ─── Scroll progress, soft cursor glow, tilt and click ripples ───
+    (() => {
+      const progress = document.getElementById('scroll-progress');
+      const glow = document.getElementById('cursor-glow');
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let ticking = false;
+      function updateProgress() {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        progress.style.width = (max > 0 ? window.scrollY / max * 100 : 0) + '%';
+        ticking = false;
+      }
+      window.addEventListener('scroll', () => {
+        if (!ticking) { requestAnimationFrame(updateProgress); ticking = true; }
+      }, { passive: true });
+      updateProgress();
+
+      if (!reduceMotion && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+        window.addEventListener('pointermove', e => {
+          glow.style.left = e.clientX + 'px';
+          glow.style.top = e.clientY + 'px';
+        }, { passive: true });
+        document.addEventListener('pointerover', e => {
+          if (e.target.closest('a, button, .card')) glow.style.opacity = '.42';
+          else glow.style.opacity = '.22';
+        }, { passive: true });
+
+        document.getElementById('grid').addEventListener('pointermove', e => {
+          if (!window.matchMedia('(hover: hover)').matches) return;
+          const card = e.target.closest('.card');
+          if (!card) return;
+          const r = card.getBoundingClientRect();
+          const x = (e.clientX - r.left) / r.width;
+          const y = (e.clientY - r.top) / r.height;
+          card.style.transform = `perspective(900px) rotateX(${(0.5-y)*4}deg) rotateY(${(x-0.5)*5}deg) translateY(-5px)`;
+          card.style.setProperty('--mx', (x*100) + '%');
+          card.style.setProperty('--my', (y*100) + '%');
+        }, { passive: true });
+        document.getElementById('grid').addEventListener('pointerout', e => {
+          const card = e.target.closest('.card');
+          if (card && !card.contains(e.relatedTarget)) card.style.transform = '';
+        }, { passive: true });
+      }
+
+      document.addEventListener('click', e => {
+        const target = e.target.closest('button, .go');
+        if (!target || reduceMotion) return;
+        const rect = target.getBoundingClientRect();
+        const ripple = document.createElement('span');
+        ripple.className = 'ripple';
+        ripple.style.left = (e.clientX ? e.clientX - rect.left : rect.width/2) + 'px';
+        ripple.style.top = (e.clientY ? e.clientY - rect.top : rect.height/2) + 'px';
+        target.appendChild(ripple);
+        ripple.addEventListener('animationend', () => ripple.remove(), { once: true });
+      });
+    })();
+
+  </script>
+</body>
+</html>
